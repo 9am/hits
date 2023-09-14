@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": [
+        "deno.window"
+    ],
+    "strict": true
+  },
+  "lint": {
+    "include": ["src/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["ban-untagged-todo"],
+      "exclude": ["no-unused-vars"]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 110,
+    "indentWidth": 4,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": ["src/"]
+  },
+  "lock": false,
+  "nodeModulesDir": true,
+  "test": {
+    "include": ["src/"]
+  },
+  "tasks": {
+    "start": "deno run --allow-env --allow-net --allow-read --unstable --watch main.ts",
+    "build": "deno compile --allow-env --allow-net --allow-read --unstable main.ts --output=hits"
+  }
+}
