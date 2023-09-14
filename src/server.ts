@@ -34,7 +34,8 @@ router
             const date = await listData(referer, 'date');
             const browser = await listData(referer, 'browser');
             const device = await listData(referer, 'device');
-            ctx.response.headers.set('Cache-Control', `no-cache, no-store, must-revalidate`);
+            ctx.response.headers.set('Cache-Control', `no-cache`);
+            ctx.response.headers.set('Expires', new Date().toGMTString());
             // ctx.response.body = JSON.stringify({ hits, geo, date, browser, device }, null, 2);
             ctx.response.body = getSVG({ hits, date, browser, device });
             ctx.response.type = 'image/svg+xml; charset=utf-8';
