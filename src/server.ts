@@ -34,8 +34,10 @@ router
             const date = await listData(referer, 'date');
             const browser = await listData(referer, 'browser');
             const device = await listData(referer, 'device');
-            ctx.response.headers.set('Cache-Control', `no-cache`);
-            ctx.response.headers.set('Expires', new Date().toGMTString());
+            ctx.response.headers.set('Cache-Control', 'max-age=0, s-maxage=0');
+            const ts = new Date().toGMTString();
+            ctx.response.headers.set('Expires', ts);
+            ctx.response.headers.set('Last-Modified', ts);
             // ctx.response.body = JSON.stringify({ hits, geo, date, browser, device }, null, 2);
             ctx.response.body = getSVG({ hits, date, browser, device });
             ctx.response.type = 'image/svg+xml; charset=utf-8';
