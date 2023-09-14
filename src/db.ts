@@ -1,4 +1,4 @@
-import ipParser from 'npm:geoip-lite';
+// import ipParser from 'npm:geoip-lite';
 import usParser from 'npm:ua-parser-js';
 
 const db = await Deno.openKv();
@@ -11,10 +11,10 @@ export const reset = async (referer: string = '') => {
 };
 
 export const incHit = async (referer: string = '', ip: string, ua: string): Promise<number> => {
-    let ipResult = {};
-    try {
-        ipResult = ipParser.lookup(ip);
-    } catch (err) {}
+    // let ipResult = {};
+    // try {
+    //     ipResult = ipParser.lookup(ip);
+    // } catch (err) {}
     let uaResult = {};
     try {
         uaResult = usParser(ua);
@@ -23,20 +23,20 @@ export const incHit = async (referer: string = '', ip: string, ua: string): Prom
 
     const commonKey = ['hit', referer];
     const totalKey = [...commonKey, 't'];
-    const geoKey = [...commonKey, 'geo', ipResult?.country ?? 'others'];
+    // const geoKey = [...commonKey, 'geo', ipResult?.country ?? 'others'];
     const dateKey = [...commonKey, 'date', new Date().toISOString().slice(0, 10)];
     const browserKey = [...commonKey, 'browser', uaResult?.browser?.name ?? 'others'];
     const deviceKey = [...commonKey, 'device', uaResult?.device?.vendor ?? 'others'];
 
     const { value: total = 0 } = await db.get(totalKey);
-    const { value: geo = 0 } = await db.get(geoKey);
+    // const { value: geo = 0 } = await db.get(geoKey);
     const { value: date = 0 } = await db.get(dateKey);
     const { value: browser = 0 } = await db.get(browserKey);
     const { value: device = 0 } = await db.get(deviceKey);
 
     await db.atomic()
         .set(totalKey, total + 1)
-        .set(geoKey, geo + 1)
+        // .set(geoKey, geo + 1)
         .set(dateKey, date + 1)
         .set(browserKey, browser + 1)
         .set(deviceKey, device + 1)

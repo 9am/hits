@@ -30,13 +30,13 @@ router
             const ip = ctx.request.ip ?? '';
 
             const hits = await incHit(referer, ip, ua);
-            const geo = await listData(referer, 'geo');
+            // const geo = await listData(referer, 'geo');
             const date = await listData(referer, 'date');
             const browser = await listData(referer, 'browser');
             const device = await listData(referer, 'device');
             ctx.response.headers.set('Cache-Control', `no-cache, no-store, must-revalidate`);
             // ctx.response.body = JSON.stringify({ hits, geo, date, browser, device }, null, 2);
-            ctx.response.body = getSVG(hits, geo, date, browser, device);
+            ctx.response.body = getSVG({ hits, date, browser, device });
             ctx.response.type = 'image/svg+xml; charset=utf-8';
         } catch (err) {
             ctx.response.headers.set('Cache-Control', `no-cache, no-store, must-revalidate`);
