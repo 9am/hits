@@ -1,5 +1,5 @@
 // import ipParser from 'npm:geoip-lite';
-import usParser from 'npm:ua-parser-js';
+// import usParser from 'npm:ua-parser-js';
 
 const db = await Deno.openKv();
 
@@ -15,34 +15,41 @@ export const incHit = async (referer: string = '', ip: string, ua: string): Prom
     // try {
     //     ipResult = ipParser.lookup(ip);
     // } catch (err) {}
-    let uaResult = {};
-    try {
-        uaResult = usParser(ua);
-    } catch (err) {}
-    console.log(uaResult);
+    // let uaResult = {};
+    // try {
+    //     uaResult = usParser(ua);
+    // } catch (err) {}
+    // console.log(uaResult);
 
     const commonKey = ['hit', referer];
     const totalKey = [...commonKey, 't'];
-    // const geoKey = [...commonKey, 'geo', ipResult?.country ?? 'others'];
     const dateKey = [...commonKey, 'date', new Date().toISOString().slice(0, 10)];
-    const browserKey = [...commonKey, 'browser', uaResult?.browser?.name ?? 'others'];
-    const deviceKey = [...commonKey, 'device', uaResult?.device?.vendor ?? 'others'];
+    // const geoKey = [...commonKey, 'geo', ipResult?.country ?? 'others'];
+    // const browserKey = [...commonKey, 'browser', uaResult?.browser?.name ?? 'others'];
+    // const deviceKey = [...commonKey, 'device', uaResult?.device?.vendor ?? 'others'];
 
-    const { value: total = 0 } = await db.get(totalKey);
+    // const { value: total = 0 } = await db.get(totalKey);
+    // const { value: date = 0 } = await db.get(dateKey);
     // const { value: geo = 0 } = await db.get(geoKey);
-    const { value: date = 0 } = await db.get(dateKey);
-    const { value: browser = 0 } = await db.get(browserKey);
-    const { value: device = 0 } = await db.get(deviceKey);
+    // const { value: browser = 0 } = await db.get(browserKey);
+    // const { value: device = 0 } = await db.get(deviceKey);
 
-    await db.atomic()
-        .set(totalKey, total + 1)
-        // .set(geoKey, geo + 1)
-        .set(dateKey, date + 1)
-        .set(browserKey, browser + 1)
-        .set(deviceKey, device + 1)
+    const val = new Deno.KvU64(1n);
+    const res = await db.atomic()
+        .mutate({
+            type: 'sum',
+            key: totalKey,
+            value: val,
+        })
+        .mutate({
+            type: 'sum',
+            key: dateKey,
+            value: val,
+        })
         .commit();
 
-    return total + 1;
+    const { value } = await db.get(totalKey);
+    return value;
 };
 
 export const listData = async (referer: string = '', key: string) => {
@@ -51,5 +58,7 @@ export const listData = async (referer: string = '', key: string) => {
     for await (const res of iter) {
         list.push(res);
     }
-    return list.map(({ key, value }) => [key.slice(-1)[0], value]).sort(([, a], [, b]) => b - a);
+    return list.map(({ key, value }) => [key.slice(-1)[0], value]).sort(([, a], [, b]) =>
+        Number(b) - Number(a)
+    );
 };
