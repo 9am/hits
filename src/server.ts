@@ -13,19 +13,6 @@ const allowReferer = ALLOW_REFERER.split(',').map((ref) => new RegExp(`^${ref}`)
 
 const router = new Router();
 router
-    .get('/api/reset', async (ctx) => {
-        try {
-            const { referer: rf } = getQuery(ctx);
-            const referer = rf ?? ctx.request.headers.get('referer') ?? '-';
-            await reset(referer);
-            ctx.response.body = `reset! ${referer}`;
-        } catch (err) {
-            ctx.response.headers.set('Cache-Control', `no-cache, no-store, must-revalidate`);
-            ctx.response.body = err.message;
-            ctx.response.status = Status.BadRequest;
-            console.error('[api error]', err);
-        }
-    })
     .get('/api', async (ctx) => {
         try {
             const { referer: rf, theme, prefix } = getQuery(ctx);
