@@ -8,26 +8,30 @@ const PORT = Deno.env.get('PORT') ?? 8000;
 const ALLOW_ORIGIN = Deno.env.get('ALLOW_ORIGIN') ?? '*';
 const ALLOW_REFERER = Deno.env.get('ALLOW_REFERER') ?? 'http://localhost';
 const NOT_FOUND = Deno.env.get('NOT_FOUND') ?? '/';
-
 const allowReferer = ALLOW_REFERER.split(',').map((ref) => new RegExp(`^${ref}`)) ?? [];
 
 const router = new Router();
 router
     .get('/api', async (ctx) => {
         try {
-            const { referer: rf, theme, prefix } = getQuery(ctx);
+            const { referer: rf, theme, prefix, charts, last_n_days = 7 } = getQuery(ctx);
             const referer = rf ?? ctx.request.headers.get('referer') ?? '-';
             if (allowReferer.every((pattern) => !pattern.test(referer))) {
                 throw new Error(`referer {${referer}} not allowed!`);
             }
             const ua = ctx.request.headers.get('user-agent') ?? '';
             const ip = ctx.request.ip ?? '';
+            const types = charts.split(',') ?? [];
+            const raw = await Promise.all(types.map(async (chart) => {
+                const list = await listData(referer, chart, { last_n_days });
+                return { [chart]: list };
+            }));
+            const data = raw.reduce((memo, val) => ({...memo, ...val}), {});
 
             const hits = await incHit(referer, ip, ua);
-            // const date = await listData(referer, 'date');
 
             ctx.response.headers.set('Cache-Control', 'max-age=1, s-maxage=1');
-            ctx.response.body = renderBasic({ hits, theme, prefix });
+            ctx.response.body = renderBasic({ hits, theme, prefix, ...data });
             ctx.response.type = 'image/svg+xml; charset=utf-8';
         } catch (err) {
             ctx.response.headers.set('Cache-Control', `no-cache, no-store, must-revalidate`);

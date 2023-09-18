@@ -1,16 +1,18 @@
+/// <reference lib="deno.unstable" />
+
 // import ipParser from 'npm:geoip-lite';
 // import usParser from 'npm:ua-parser-js';
 
 const db = await Deno.openKv();
 
-export const reset = async (referer: string = '') => {
+export const reset = async (referer = '') => {
     const iter = await db.list({ prefix: ['hit', referer] });
     for await (const res of iter) {
         db.delete(res.key);
     }
 };
 
-export const incHit = async (referer: string = '', ip: string, ua: string): Promise<number> => {
+export const incHit = async (referer = '', ip: string, ua: string): Promise<number> => {
     // let ipResult = {};
     // try {
     //     ipResult = ipParser.lookup(ip);
@@ -23,19 +25,17 @@ export const incHit = async (referer: string = '', ip: string, ua: string): Prom
 
     const commonKey = ['hit', referer];
     const totalKey = [...commonKey, 't'];
-    const dateKey = [...commonKey, 'date', new Date().toISOString().slice(0, 10)];
+    const dateKey = [
+        ...commonKey,
+        'date',
+        new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString().slice(0, 10),
+    ];
     // const geoKey = [...commonKey, 'geo', ipResult?.country ?? 'others'];
     // const browserKey = [...commonKey, 'browser', uaResult?.browser?.name ?? 'others'];
     // const deviceKey = [...commonKey, 'device', uaResult?.device?.vendor ?? 'others'];
 
-    // const { value: total = 0 } = await db.get(totalKey);
-    // const { value: date = 0 } = await db.get(dateKey);
-    // const { value: geo = 0 } = await db.get(geoKey);
-    // const { value: browser = 0 } = await db.get(browserKey);
-    // const { value: device = 0 } = await db.get(deviceKey);
-
     const val = new Deno.KvU64(1n);
-    const res = await db.atomic()
+    await db.atomic()
         .mutate({
             type: 'sum',
             key: totalKey,
@@ -48,12 +48,15 @@ export const incHit = async (referer: string = '', ip: string, ua: string): Prom
         })
         .commit();
 
-    const { value } = await db.get(totalKey);
-    return value;
+    const { value } = await db.get<number>(totalKey);
+    return value as number;
 };
 
-export const listData = async (referer: string = '', key: string) => {
-    const iter = await db.list({ prefix: ['hit', referer, key] });
+export const listData = async (referer = '', key: string, filter = {}) => {
+    const selector = key === 'date' ? {
+        start: ['hit', referer, key, new Date(Date.now() - filter.last_n_days * 24 * 3600 * 1000).toISOString().slice(0, 10)]
+    } : {};
+    const iter = await db.list({ prefix: ['hit', referer, key], ...selector });
     const list = [];
     for await (const res of iter) {
         list.push(res);
