@@ -14,7 +14,7 @@ const router = new Router();
 router
     .get('/api', async (ctx) => {
         try {
-            const { referer: rf, theme, prefix, charts, last_n_days = 7 } = getQuery(ctx);
+            const { referer: rf, theme, prefix, charts = '', last_n_days = 7 } = getQuery(ctx);
             const referer = rf ?? ctx.request.headers.get('referer') ?? '-';
             if (allowReferer.every((pattern) => !pattern.test(referer))) {
                 throw new Error(`referer {${referer}} not allowed!`);
