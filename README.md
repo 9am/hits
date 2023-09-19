@@ -10,7 +10,7 @@
 - Show last n days **trends** with `charts=date&last_n_days={n}`.
 - Customise **prefix text** with `prefix={text}`.
 - Align with system **dark mode** with 0 config.
-- 2 color **themes** outof box. (more are comming...)
+- 2 color **themes** out of the box. (more are comming...)
 - Secure your hits with **`ALLOW_REFERER`** env.
 - Deploy your own version with **Deno deploy** and **Deno KV**.
 

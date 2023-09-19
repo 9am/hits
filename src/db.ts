@@ -28,7 +28,7 @@ export const incHit = async (referer = '', ip: string, ua: string): Promise<numb
     const dateKey = [
         ...commonKey,
         'date',
-        new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString().slice(0, 10),
+        new Date().toISOString().slice(0, 10),
     ];
     // const geoKey = [...commonKey, 'geo', ipResult?.country ?? 'others'];
     // const browserKey = [...commonKey, 'browser', uaResult?.browser?.name ?? 'others'];
