@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "lib": [
         "deno.window"
     ],
@@ -24,7 +23,7 @@
     "include": ["src/"]
   },
   "lock": false,
-  "nodeModulesDir": true,
+  "nodeModulesDir": "auto",
   "test": {
     "include": ["src/"]
   },
