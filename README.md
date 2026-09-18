@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://hits.deno.dev/api?referer=https://github.com/9am/hits" alt="hits" width="400" />
+    <img src="https://hits.9am.deno.net/api?referer=https://github.com/9am/hits" alt="hits" width="400" />
     <p>Get dynamically generated bitmap hit counter on your READMEs!</p>
 </div>
 
