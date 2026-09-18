@@ -32,19 +32,19 @@ You don't need to pass the `{referer}` when embeding into web pages.
 
 <details>
     <summary>Embed in Github markdown.</summary>
-    <img src="https://hits.deno.dev/api?referer=https://github.com/9am/hits" />
+    <img src="https://hits.9am.deno.net/api?referer=https://github.com/9am/hits" />
 </details>
 <details>
     <summary>Themes grayscale</summary>
-    <img src="https://hits.deno.dev/api?referer=https://github.com/9am/hits&theme=grayscale" />
+    <img src="https://hits.9am.deno.net/api?referer=https://github.com/9am/hits&theme=grayscale" />
 </details>
 <details>
     <summary>Customise prefix</summary>
-    <img src="https://hits.deno.dev/api?referer=https://github.com/9am/hits&prefix=prefix:%20" />
+    <img src="https://hits.9am.deno.net/api?referer=https://github.com/9am/hits&prefix=prefix:%20" />
 </details>
 <details>
     <summary>14 days trends</summary>
-    <img src="https://hits.deno.dev/api?referer=https://github.com/9am/hits&charts=date&last_n_days=14" />
+    <img src="https://hits.9am.deno.net/api?referer=https://github.com/9am/hits&charts=date&last_n_days=14" />
 </details>
 
 ## Support the project
