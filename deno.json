@@ -28,7 +28,7 @@
     "include": ["src/"]
   },
   "tasks": {
-    "start": "deno run --allow-env --allow-net --allow-read --unstable --watch main.ts",
-    "build": "deno compile --allow-env --allow-net --allow-read --unstable main.ts --output=hits"
+    "start": "deno run --allow-env --allow-net --allow-read --unstable-kv --watch main.ts",
+    "build": "deno compile --allow-env --allow-net --allow-read --unstable-kv main.ts --output=hits"
   }
 }
