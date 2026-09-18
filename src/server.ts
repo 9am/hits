@@ -1,6 +1,4 @@
-import { Application, Router, Status } from 'https://deno.land/x/oak@v12.6.1/mod.ts';
-import { getQuery } from 'https://deno.land/x/oak@v12.6.1/helpers.ts';
-import { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts';
+import { Application, Router, Status } from 'jsr:@oak/oak';
 import { incHit, listData, reset } from './db.ts';
 import { renderBasic } from './painter.ts';
 
@@ -14,7 +12,12 @@ const router = new Router();
 router
     .get('/api', async (ctx) => {
         try {
-            const { referer: rf, theme, prefix, charts = '', last_n_days = 7 } = getQuery(ctx);
+            const q = ctx.request.url.searchParams;
+            const rf = q.get('referer') ?? undefined;
+            const theme = q.get('theme') ?? undefined;
+            const prefix = q.get('prefix') ?? undefined;
+            const charts = q.get('charts') ?? '';
+            const last_n_days = q.get('last_n_days') ?? 7;
             const referer = rf ?? ctx.request.headers.get('referer') ?? '-';
             if (allowReferer.every((pattern) => !pattern.test(referer))) {
                 throw new Error(`referer {${referer}} not allowed!`);
@@ -42,7 +45,10 @@ router
     });
 
 const app = new Application();
-app.use(oakCors({ origin: ALLOW_ORIGIN })); // Enable CORS for All Routes
+app.use(async (ctx, next) => {
+    ctx.response.headers.set('Access-Control-Allow-Origin', ALLOW_ORIGIN);
+    await next();
+});
 app.use(router.routes());
 app.use(router.allowedMethods());
 app.use((ctx) => {
